@@ -1,0 +1,36 @@
+# Core dependencies for log-based anomaly detection replication
+# Compatible with Python 3.12
+
+# Core scientific computing
+numpy>=1.24.0
+pandas>=2.0.0
+
+# Machine Learning
+scikit-learn>=1.3.0
+
+# PyTorch with CUDA support (for NVIDIA RTX 4060)
+# Will be installed by setup.sh with correct CUDA version
+# torch>=2.0.0
+# torchvision>=0.15.0
+# torchaudio>=2.0.0
+
+# Utilities
+tqdm>=4.65.0
+h5py>=3.8.0
+
+# Log parsing
+# git+https://github.com/logpai/logparser.git
+
+# For imbalanced dataset sampling (optional for LSTM)
+# torchsampler>=0.1.2
+
+# Feature analysis (for VIF and correlation analysis)
+statsmodels>=0.14.0
+scipy>=1.11.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# Additional dependencies
+gensim>=4.3.0  # For Word2Vec embeddings

@@ -1,0 +1,9 @@
+Model,Metric,Paper,Replication,Abs Diff,% Diff
+Random_Forest_MCV,Precision,1.0000,0.9990,-0.0010,-0.10%
+Random_Forest_MCV,Recall,1.0000,0.9992,-0.0008,-0.08%
+Random_Forest_MCV,F1 Score,0.9990,0.9991,+0.0001,+0.01%
+Random_Forest_MCV,Auc,N/A,1.0000,N/A,N/A
+LSTM_Word2Vec,Precision,0.9970,0.9960,-0.0010,-0.10%
+LSTM_Word2Vec,Recall,0.9210,0.9939,+0.0729,+7.91%
+LSTM_Word2Vec,F1 Score,0.9580,0.9949,+0.0369,+3.86%
+LSTM_Word2Vec,Auc,N/A,0.9981,N/A,N/A

@@ -1,0 +1,16 @@
+{
+    "precision": 0.6134453781512605,
+    "recall": 0.8795180722891566,
+    "f1_score": 0.7227722772277227,
+    "auc": 0.798266235674405,
+    "accuracy": 0.6606060606060606,
+    "confusion_matrix": {
+        "TP": 73,
+        "TN": 36,
+        "FP": 46,
+        "FN": 10
+    },
+    "threshold": 0.5,
+    "num_sessions": 165,
+    "num_windows": 17864
+}
