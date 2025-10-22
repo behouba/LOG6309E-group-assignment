@@ -1,17 +1,3 @@
-"""
-Model Training and Evaluation Script
-
-Trains and evaluates anomaly detection models:
-1. Classical Model: Random Forest (with MCV representation)
-2. Deep Learning Model: LSTM (with Word2Vec embeddings)
-
-Evaluates both with and without feature selection using:
-- Precision
-- Recall
-- F1-score
-- AUC (Area Under ROC Curve)
-"""
-
 import numpy as np
 import pandas as pd
 import sys
@@ -35,17 +21,6 @@ warnings.filterwarnings('ignore')
 
 
 def evaluate_model(y_true, y_pred, y_pred_proba=None):
-    """
-    Evaluate model performance with multiple metrics
-
-    Args:
-        y_true: True labels
-        y_pred: Predicted labels
-        y_pred_proba: Predicted probabilities (optional, for AUC)
-
-    Returns:
-        Dictionary with evaluation metrics
-    """
     # Precision, Recall, F1-score
     precision, recall, f1, _ = precision_recall_fscore_support(
         y_true, y_pred, average='binary', zero_division=0
@@ -78,7 +53,6 @@ def evaluate_model(y_true, y_pred, y_pred_proba=None):
 
 
 def print_metrics(metrics, model_name="Model"):
-    """Print evaluation metrics in a formatted way"""
     print(f"\n{model_name} Performance:")
     print("-" * 50)
     print(f"  Precision: {metrics['precision']:.4f}")
@@ -93,18 +67,6 @@ def print_metrics(metrics, model_name="Model"):
 
 
 def train_random_forest(X_train, y_train, n_estimators=100, random_state=42, **kwargs):
-    """
-    Train Random Forest classifier
-
-    Args:
-        X_train: Training features
-        y_train: Training labels
-        n_estimators: Number of trees (default: 100)
-        random_state: Random seed
-
-    Returns:
-        Trained model
-    """
     print(f"\nTraining Random Forest...")
     print(f"  n_estimators: {n_estimators}")
     print(f"  X_train shape: {X_train.shape}")
@@ -124,7 +86,6 @@ def train_random_forest(X_train, y_train, n_estimators=100, random_state=42, **k
 
 
 def train_logistic_regression(X_train, y_train, C=100, max_iter=1000, random_state=42):
-    """Train Logistic Regression classifier"""
     print(f"\nTraining Logistic Regression...")
     print(f"  C: {C}")
     print(f"  X_train shape: {X_train.shape}")
@@ -143,7 +104,6 @@ def train_logistic_regression(X_train, y_train, C=100, max_iter=1000, random_sta
 
 
 def train_svm(X_train, y_train, C=1.0, kernel='rbf', random_state=42):
-    """Train SVM classifier"""
     print(f"\nTraining SVM...")
     print(f"  C: {C}")
     print(f"  Kernel: {kernel}")
@@ -163,7 +123,6 @@ def train_svm(X_train, y_train, C=1.0, kernel='rbf', random_state=42):
 
 
 def train_decision_tree(X_train, y_train, max_depth=None, random_state=42):
-    """Train Decision Tree classifier"""
     print(f"\nTraining Decision Tree...")
     print(f"  max_depth: {max_depth}")
     print(f"  X_train shape: {X_train.shape}")
@@ -180,18 +139,6 @@ def train_decision_tree(X_train, y_train, max_depth=None, random_state=42):
 
 
 def evaluate_classical_model(model, X_test, y_test, model_name="Model"):
-    """
-    Evaluate classical ML model
-
-    Args:
-        model: Trained model
-        X_test: Test features
-        y_test: Test labels
-        model_name: Name of the model
-
-    Returns:
-        Evaluation metrics
-    """
     print(f"\nEvaluating {model_name}...")
 
     # Predictions
@@ -218,7 +165,6 @@ def evaluate_classical_model(model, X_test, y_test, model_name="Model"):
 
 
 def plot_roc_curve(y_true, y_pred_proba, model_name, output_file):
-    """Plot and save ROC curve"""
     fpr, tpr, _ = roc_curve(y_true, y_pred_proba)
     auc = roc_auc_score(y_true, y_pred_proba)
 
@@ -238,7 +184,6 @@ def plot_roc_curve(y_true, y_pred_proba, model_name, output_file):
 
 
 def save_results(results, output_file):
-    """Save results to JSON file"""
     output_file.parent.mkdir(parents=True, exist_ok=True)
 
     with open(output_file, 'w') as f:
@@ -248,12 +193,6 @@ def save_results(results, output_file):
 
 
 def compare_results(results_dict):
-    """
-    Compare results between different configurations
-
-    Args:
-        results_dict: Dictionary with results for different configs
-    """
     print("\n" + "="*60)
     print("Performance Comparison")
     print("="*60)
@@ -278,8 +217,6 @@ def compare_results(results_dict):
 
 
 def main():
-    """Main function for model training and evaluation"""
-
     script_dir = Path(__file__).parent
     project_root = script_dir.parent
 

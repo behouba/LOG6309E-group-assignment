@@ -1,6 +1,3 @@
-"""
-Utility script to inspect dataset formats and structures
-"""
 import numpy as np
 import json
 import sys
@@ -8,7 +5,6 @@ from pathlib import Path
 
 
 def inspect_npz(file_path):
-    """Inspect NPZ file structure"""
     print(f"\n{'='*60}")
     print(f"Inspecting NPZ file: {file_path}")
     print(f"{'='*60}")
@@ -32,7 +28,6 @@ def inspect_npz(file_path):
 
 
 def inspect_json(file_path, max_entries=3):
-    """Inspect JSON file structure"""
     print(f"\n{'='*60}")
     print(f"Inspecting JSON file: {file_path}")
     print(f"{'='*60}")

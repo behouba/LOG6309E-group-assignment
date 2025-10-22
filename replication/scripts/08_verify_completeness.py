@@ -1,13 +1,3 @@
-"""
-Verification Script for Replication Completeness
-
-Checks if all required experiments have been run for both datasets:
-- HDFS: Random Forest + LSTM
-- BGL: Random Forest + LSTM
-
-With and without feature selection for each model.
-"""
-
 import json
 from pathlib import Path
 import sys
@@ -17,16 +7,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 
 def check_data_exists(data_dir: Path, dataset: str) -> dict:
-    """
-    Check if required data files exist for a dataset
-
-    Args:
-        data_dir: Path to data directory
-        dataset: Dataset name (HDFS or BGL)
-
-    Returns:
-        Dictionary with existence status
-    """
     status = {
         'raw': False,
         'parsed': False,
@@ -85,16 +65,6 @@ def check_data_exists(data_dir: Path, dataset: str) -> dict:
 
 
 def check_results_exist(results_dir: Path, dataset: str) -> dict:
-    """
-    Check if required result files exist for a dataset
-
-    Args:
-        results_dir: Path to results directory
-        dataset: Dataset name
-
-    Returns:
-        Dictionary with existence status
-    """
     status = {
         'rf_no_fs': False,
         'rf_with_fs': False,
@@ -149,37 +119,29 @@ def check_results_exist(results_dir: Path, dataset: str) -> dict:
 
 
 def print_status_report(dataset: str, data_status: dict, results_status: dict):
-    """
-    Print status report for a dataset
-
-    Args:
-        dataset: Dataset name
-        data_status: Data existence status
-        results_status: Results existence status
-    """
     print(f"\n{'='*70}")
     print(f"{dataset} Dataset Status")
     print(f"{'='*70}")
 
     # Data pipeline status
     print("\nData Pipeline:")
-    print(f"  ✓ Raw data:        {'✓' if data_status['raw'] else '✗ MISSING'}")
-    print(f"  ✓ Parsed data:     {'✓' if data_status['parsed'] else '✗ MISSING'}")
-    print(f"  ✓ Split data:      {'✓' if data_status['split'] else '✗ MISSING'}")
+    print(f"  Raw data:        {'OK' if data_status['raw'] else 'MISSING'}")
+    print(f"  Parsed data:     {'OK' if data_status['parsed'] else 'MISSING'}")
+    print(f"  Split data:      {'OK' if data_status['split'] else 'MISSING'}")
 
     print("\nRepresentations:")
-    print(f"  ✓ MCV:             {'✓' if data_status['representations']['mcv'] else '✗ MISSING'}")
-    print(f"  ✓ Word2Vec:        {'✓' if data_status['representations']['word2vec'] else '✗ MISSING'}")
+    print(f"  MCV:             {'OK' if data_status['representations']['mcv'] else 'MISSING'}")
+    print(f"  Word2Vec:        {'OK' if data_status['representations']['word2vec'] else 'MISSING'}")
 
     print("\nFeature Selection:")
-    print(f"  ✓ MCV (selected):  {'✓' if data_status['feature_selected']['mcv'] else '✗ MISSING'}")
-    print(f"  ✓ W2V (selected):  {'✓' if data_status['feature_selected']['word2vec'] else '✗ MISSING'}")
+    print(f"  MCV (selected):  {'OK' if data_status['feature_selected']['mcv'] else 'MISSING'}")
+    print(f"  W2V (selected):  {'OK' if data_status['feature_selected']['word2vec'] else 'MISSING'}")
 
     # Results status
     print("\nModel Results:")
-    print(f"  ✓ RF (no FS):      {'✓' if results_status['rf_no_fs'] else '✗ MISSING'}")
-    print(f"  ✓ RF (with FS):    {'✓' if results_status['rf_with_fs'] else '✗ MISSING'}")
-    print(f"  ✓ LSTM:            {'✓' if results_status['lstm'] else '✗ MISSING'}")
+    print(f"  RF (no FS):      {'OK' if results_status['rf_no_fs'] else 'MISSING'}")
+    print(f"  RF (with FS):    {'OK' if results_status['rf_with_fs'] else 'MISSING'}")
+    print(f"  LSTM:            {'OK' if results_status['lstm'] else 'MISSING'}")
 
     # Overall completeness
     data_complete = (data_status['raw'] and data_status['parsed'] and
@@ -193,25 +155,14 @@ def print_status_report(dataset: str, data_status: dict, results_status: dict):
 
     print(f"\nOverall Status:")
     if data_complete and results_complete:
-        print(f"  ✓✓✓ {dataset} is COMPLETE!")
+        print(f"  {dataset} is COMPLETE.")
     elif data_complete:
-        print(f"  ⚠️  Data ready but results incomplete")
+        print("  WARNING: Data ready but results incomplete")
     else:
-        print(f"  ✗✗✗ {dataset} is INCOMPLETE")
+        print(f"  {dataset} is INCOMPLETE")
 
 
 def generate_todo_list(data_status: dict, results_status: dict, dataset: str) -> list:
-    """
-    Generate list of missing steps
-
-    Args:
-        data_status: Data existence status
-        results_status: Results existence status
-        dataset: Dataset name
-
-    Returns:
-        List of missing steps
-    """
     todos = []
 
     if not data_status['raw']:
@@ -239,7 +190,6 @@ def generate_todo_list(data_status: dict, results_status: dict, dataset: str) ->
 
 
 def main():
-    """Main verification function"""
     print("\n" + "="*70)
     print("Replication Completeness Verification")
     print("="*70)
@@ -277,12 +227,12 @@ def main():
     print(f"{'='*70}")
 
     if all_complete:
-        print("\n✓✓✓ All experiments are COMPLETE for both datasets!")
+        print("\nAll experiments are COMPLETE for both datasets!")
         print("\nYou can now run:")
         print("  python scripts/07_compare_with_paper.py")
         return 0
     else:
-        print("\n⚠️  Some experiments are missing. Please complete the following:\n")
+        print("\nWARNING: Some experiments are missing. Please complete the following:\n")
 
         for dataset, todos in all_todos.items():
             print(f"{dataset}:")

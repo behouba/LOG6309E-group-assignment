@@ -1,14 +1,3 @@
-"""
-Optimized Feature Selection Script for Large Datasets
-
-Implements memory-efficient feature selection for datasets with millions of samples:
-1. Chunked correlation computation
-2. Approximate VIF analysis using sampling
-3. GPU acceleration support (optional)
-
-Designed to handle BGL dataset (4.7M samples) on systems with limited RAM.
-"""
-
 import numpy as np
 import pandas as pd
 import sys
@@ -27,23 +16,6 @@ import seaborn as sns
 
 
 def chunked_correlation_analysis(X, threshold=0.95, chunk_size=100000, method='pearson'):
-    """
-    Memory-efficient correlation analysis using chunked computation
-
-    Instead of computing full n×n correlation matrix at once,
-    processes data in chunks to reduce memory usage.
-
-    Args:
-        X: Feature matrix (n_samples, n_features)
-        threshold: Correlation threshold (default: 0.95)
-        chunk_size: Number of samples per chunk (default: 100k)
-        method: Correlation method (default: 'pearson')
-
-    Returns:
-        selected_features: Indices of features to keep
-        corr_matrix: Correlation matrix (features × features)
-        linkage: Hierarchical clustering linkage
-    """
     print("\n" + "="*60)
     print("Chunked Correlation Analysis (Memory-Efficient)")
     print("="*60)
@@ -191,22 +163,6 @@ def chunked_correlation_analysis(X, threshold=0.95, chunk_size=100000, method='p
 
 
 def sampled_vif_analysis(X, threshold=10.0, sample_size=50000, random_state=42):
-    """
-    VIF analysis using sampling for large datasets
-
-    For datasets with millions of samples, VIF computation is extremely slow.
-    This function uses a stratified sample to approximate VIF values.
-
-    Args:
-        X: Feature matrix (n_samples, n_features)
-        threshold: VIF threshold (default: 10.0)
-        sample_size: Number of samples to use (default: 50k)
-        random_state: Random seed for reproducibility
-
-    Returns:
-        selected_features: Indices of features to keep
-        vif_scores: Final VIF scores
-    """
     print("\n" + "="*60)
     print("Sampled VIF Analysis (For Large Datasets)")
     print("="*60)
@@ -338,20 +294,20 @@ def sampled_vif_analysis(X, threshold=10.0, sample_size=50000, random_state=42):
 
 def optimized_combined_feature_selection(X, corr_threshold=0.95, vif_threshold=10.0,
                                          chunk_size=100000, vif_sample_size=50000):
-    """
-    Optimized combined feature selection for large datasets
 
-    Args:
-        X: Feature matrix
-        corr_threshold: Correlation threshold
-        vif_threshold: VIF threshold
-        chunk_size: Chunk size for correlation computation
-        vif_sample_size: Sample size for VIF computation
 
-    Returns:
-        selected_features: Indices of features to keep
-        analysis_results: Dict with analysis details
-    """
+
+
+
+
+
+
+
+
+
+
+
+
     print("\n" + "="*60)
     print("Optimized Combined Feature Selection")
     print("="*60)
@@ -405,7 +361,7 @@ def optimized_combined_feature_selection(X, corr_threshold=0.95, vif_threshold=1
 
 def save_selected_features(X_train, y_train, X_test, y_test, selected_features,
                           output_file):
-    """Save feature-selected data to NPZ file"""
+
     print(f"\nSaving feature-selected data to: {output_file}")
 
     X_train_selected = X_train[:, selected_features]
@@ -426,7 +382,6 @@ def save_selected_features(X_train, y_train, X_test, y_test, selected_features,
 
 
 def plot_correlation_matrix(corr_matrix, output_file, max_features=100):
-    """Plot correlation matrix (subsample if too large)"""
     n_features = corr_matrix.shape[0]
 
     if n_features > max_features:
@@ -445,8 +400,6 @@ def plot_correlation_matrix(corr_matrix, output_file, max_features=100):
 
 
 def main():
-    """Main function for optimized feature selection"""
-
     script_dir = Path(__file__).parent
     project_root = script_dir.parent
 

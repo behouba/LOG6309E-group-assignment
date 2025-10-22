@@ -1,12 +1,6 @@
-"""
-Configuration file for the replication pipeline
-
-This file allows easy switching between datasets and experiment settings.
-"""
-
 # Dataset selection
 # Options: "HDFS", "BGL", "Spirit", "Thunderbird"
-DATASET = "BGL"
+DATASET = "HDFS"
 
 # Data mode
 # Options: "sample" (100k lines for quick testing), "full" (complete dataset)
@@ -48,7 +42,7 @@ LSTM = {
     "num_layers": 1,
     "num_epochs": 10,
     "learning_rate": 0.001,
-    "batch_size": 64,  # Increased for RTX 4060 (8GB VRAM)
+    "batch_size": 64, # Adjust based on GPU memory
     "window_size": 50,
     "stride": 50,
     "random_seed": 42
@@ -84,26 +78,21 @@ TRAIN_TEST_SPLIT = {
 }
 
 # GPU Configuration
-# RTX 4060: 8GB VRAM, 24 SM (3072 CUDA cores)
-# Optimal settings for RTX 4060
 GPU_CONFIG = {
-    "use_gpu": True,  # Enable GPU acceleration
-    "device": "cuda",  # Use CUDA
-    "mixed_precision": True,  # Use automatic mixed precision (AMP) for faster training
-    "num_workers": 4,  # DataLoader workers (RTX 4060 has good PCIe bandwidth)
-    "pin_memory": True,  # Pin memory for faster data transfer to GPU
-    "batch_size_multiplier": 2,  # RTX 4060 can handle larger batches than older GPUs
+    "use_gpu": True,  
+    "device": "cuda",
+    "mixed_precision": True,
+    "num_workers": 4,
+    "pin_memory": True,
+    "batch_size_multiplier": 2,
 }
 
 # Helper functions
 def get_parsed_file():
-    """Get the path to the parsed log file based on current config"""
     return DATASET_FILES[DATASET][DATA_MODE]
 
 def get_anomaly_labels_file():
-    """Get the path to the anomaly labels file"""
     return DATASET_FILES[DATASET]["anomaly_labels"]
 
 def get_experiment_name():
-    """Get a descriptive name for the current experiment"""
     return f"{DATASET}_{DATA_MODE}"

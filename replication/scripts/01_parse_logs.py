@@ -1,55 +1,41 @@
-"""
-Log Parsing Script using Drain Parser
-
-This script parses raw log files into structured JSON format using the Drain algorithm.
-Supports HDFS and BGL datasets with dataset-specific configurations.
-
-Reference:
-    He et al. (2017). Drain: An Online Log Parsing Approach with Fixed Depth Tree. ICWS 2017.
-"""
-
 import sys
 import os
 import json
 import re
 from pathlib import Path
 
-# Add logparser to path if installed via git
 try:
     from logparser import Drain
     LOGPARSER_AVAILABLE = True
 except ImportError:
     LOGPARSER_AVAILABLE = False
-    # Don't exit - we can still copy sample data
 
 
-# Dataset configurations
 DATASET_CONFIGS = {
     "HDFS": {
         "log_format": "<Date> <Time> <Pid> <Level> <Component>: <Content>",
         "regex": [
-            r'blk_-?\d+',  # block id
-            r'(\d+\.){3}\d+(:\d+)?'  # IP
+            r'blk_-?\d+',
+            r'(\d+\.){3}\d+(:\d+)?'
         ],
-        "st": 0.5,  # Similarity threshold
-        "depth": 4  # Depth of all leaf nodes
+        "st": 0.5,
+        "depth": 4
     },
 
     "BGL": {
         "log_format": "<Label> <Timestamp> <Date> <Node> <Time> <NodeRepeat> <Type> <Component> <Level> <Content>",
-        # Refined regex patterns from material/README.md
         "regex": [
             r'core\.\d+',
-            r'(?<=:)(\ [A-Z][+-]?)+(?![a-z])',  # match X+ A C Y+......
+            r'(?<=:)(\ [A-Z][+-]?)+(?![a-z])',
             r'(?<=r)\d{1,2}',
             r'(?<=fpr)\d{1,2}',
             r'(0x)?[0-9a-fA-F]{8}',
             r'(?<=\.\.)0[xX][0-9a-fA-F]+',
             r'(?<=\.\.)\d+(?!x)',
             r'\d+(?=:)',
-            r'^\d+$',  # only numbers
+            r'^\d+$',
             r'(?<=\=)\d+(?!x)',
-            r'(?<=\=)0[xX][0-9a-fA-F]+'  # for hexadecimal
+            r'(?<=\=)0[xX][0-9a-fA-F]+'
         ],
         "st": 0.5,
         "depth": 4
@@ -58,19 +44,6 @@ DATASET_CONFIGS = {
 
 
 def parse_logs_drain(dataset_name, input_file, output_dir, config=None):
-    """
-    Parse log file using Drain algorithm
-
-    Args:
-        dataset_name: Name of the dataset (HDFS, BGL, etc.)
-        input_file: Path to raw log file
-        output_dir: Directory to save parsed results
-        config: Optional custom configuration (uses defaults if None)
-
-    Returns:
-        Path to output structured JSON file
-    """
-
     if config is None:
         if dataset_name not in DATASET_CONFIGS:
             raise ValueError(f"Unknown dataset: {dataset_name}. Available: {list(DATASET_CONFIGS.keys())}")
@@ -87,10 +60,7 @@ def parse_logs_drain(dataset_name, input_file, output_dir, config=None):
     print(f"  Depth: {config['depth']}")
     print(f"  Regex patterns: {len(config['regex'])} patterns")
 
-    # Create output directory
     os.makedirs(output_dir, exist_ok=True)
-
-    # Initialize Drain parser
     parser = Drain.LogParser(
         log_format=config['log_format'],
         indir=str(Path(input_file).parent),
@@ -100,12 +70,10 @@ def parse_logs_drain(dataset_name, input_file, output_dir, config=None):
         rex=config['regex']
     )
 
-    # Parse logs
     log_filename = Path(input_file).name
     print(f"\nParsing file: {log_filename}")
     parser.parse(log_filename)
 
-    # Output files
     structured_file = Path(output_dir) / f"{log_filename}_structured.csv"
     template_file = Path(output_dir) / f"{log_filename}_templates.csv"
 
@@ -113,22 +81,12 @@ def parse_logs_drain(dataset_name, input_file, output_dir, config=None):
     print(f"Structured output: {structured_file}")
     print(f"Templates output: {template_file}")
 
-    # Convert CSV to JSON for easier processing
     json_output = convert_csv_to_json(structured_file)
 
     return json_output
 
 
 def convert_csv_to_json(csv_file):
-    """
-    Convert Drain CSV output to JSON format
-
-    Args:
-        csv_file: Path to structured CSV file
-
-    Returns:
-        Path to JSON output file
-    """
     import csv
 
     json_file = str(csv_file).replace('_structured.csv', '_structured.json')
@@ -137,14 +95,11 @@ def convert_csv_to_json(csv_file):
     print(f"Input: {csv_file}")
     print(f"Output: {json_file}")
 
-    # Read CSV and convert to JSON
     data = []
     with open(csv_file, 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
             data.append(row)
-
-    # Write JSON
     with open(json_file, 'w') as f:
         json.dump(data, f, indent=4)
 
@@ -154,22 +109,6 @@ def convert_csv_to_json(csv_file):
 
 
 def preprocess_logs(input_file, output_file=None, dataset_name=None):
-    """
-    Pre-processing step before parsing (following Qin et al. approach)
-
-    This can include:
-    - Removing duplicate entries
-    - Normalizing timestamps
-    - Filtering irrelevant logs
-
-    Args:
-        input_file: Path to raw log file
-        output_file: Path to save preprocessed logs (default: input_file + ".preprocessed")
-        dataset_name: Name of dataset for dataset-specific preprocessing
-
-    Returns:
-        Path to preprocessed log file
-    """
     if output_file is None:
         output_file = str(input_file) + ".preprocessed"
 
@@ -179,7 +118,6 @@ def preprocess_logs(input_file, output_file=None, dataset_name=None):
     print(f"Input: {input_file}")
     print(f"Output: {output_file}")
 
-    # Simple preprocessing: remove empty lines and duplicates
     seen_lines = set()
     processed_count = 0
 
@@ -197,13 +135,8 @@ def preprocess_logs(input_file, output_file=None, dataset_name=None):
 
 
 def main():
-    """Main function for log parsing"""
-
-    # Default paths
     script_dir = Path(__file__).parent
     project_root = script_dir.parent
-
-    # Parse command line arguments
     import argparse
     parser = argparse.ArgumentParser(description='Parse log files using Drain')
     parser.add_argument('dataset', nargs='?', default='HDFS',
@@ -217,19 +150,16 @@ def main():
 
     args = parser.parse_args()
 
-    # Example usage for HDFS
     print("="*60)
     print("Log Parsing Pipeline")
     print("="*60)
 
-    # Check if we should use the sample data from material
     material_sample = project_root.parent / "material" / "samples" / "HDFS_100k.log_structured.json"
 
     if material_sample.exists() and not args.skip_sample_copy and not args.input_file:
         print(f"\nFound existing HDFS sample data: {material_sample}")
         print("This data is already parsed. Copying to replication directory...")
 
-        # Copy to replication data directory
         dest_dir = project_root / "data" / "parsed"
         dest_dir.mkdir(parents=True, exist_ok=True)
 
@@ -237,28 +167,26 @@ def main():
         dest_file = dest_dir / "HDFS_100k.log_structured.json"
         shutil.copy(material_sample, dest_file)
 
-        print(f"✓ Copied parsed data to: {dest_file}")
+        print(f"Copied parsed data to: {dest_file}")
 
-        # Also copy the split data
         material_split = project_root.parent / "material" / "samples" / "HDFS_100k.log_0.7_splitted.npz"
         if material_split.exists():
             split_dir = project_root / "data" / "split"
             split_dir.mkdir(parents=True, exist_ok=True)
             dest_split = split_dir / "HDFS_100k.log_0.7_splitted.npz"
             shutil.copy(material_split, dest_split)
-            print(f"✓ Copied split data to: {dest_split}")
+            print(f"Copied split data to: {dest_split}")
 
         print("\n" + "="*60)
-        print("✓ Data preparation completed successfully!")
+        print("Data preparation completed successfully.")
         print("="*60)
         print("\nSample data is ready for use:")
         print(f"  - Parsed: {dest_file}")
         if material_split.exists():
             print(f"  - Split: {dest_split}")
 
-        return 0  # Success
+        return 0
 
-    # Parse actual log files
     elif args.input_file:
         dataset_name = args.dataset
         input_file = Path(args.input_file)
@@ -267,7 +195,6 @@ def main():
             print(f"❌ Error: Input file not found: {input_file}")
             return 1
 
-        # Apply Qin et al. preprocessing if requested
         if args.use_qin_preprocessing:
             print("\nApplying Qin et al. preprocessing...")
             try:
@@ -279,14 +206,12 @@ def main():
                     str(preprocessed_file),
                     dataset_name=dataset_name
                 )
-                # Use preprocessed file for parsing
                 input_file = preprocessed_file
-                print(f"✓ Preprocessing completed: {preprocessed_file}")
+                print(f"Preprocessing completed: {preprocessed_file}")
 
             except ImportError:
-                print("⚠️  Warning: Could not import Qin preprocessor. Skipping preprocessing.")
+                print("Warning: Could not import Qin preprocessor. Skipping preprocessing.")
 
-        # Parse logs
         output_dir = project_root / "data" / "parsed"
         output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -296,7 +221,7 @@ def main():
                 input_file=str(input_file),
                 output_dir=str(output_dir)
             )
-            print("\n✓ Parsing completed successfully!")
+            print("\nParsing completed successfully.")
             return 0
 
         except Exception as e:
@@ -317,12 +242,11 @@ def main():
         print("  python 01_parse_logs.py BGL data/raw/BGL/BGL.log")
         print("="*60)
 
-        return 1  # Failure
+        return 1
 
 
 if __name__ == "__main__":
     if len(sys.argv) > 2:
-        # Command line usage: python 01_parse_logs.py <dataset> <input_file>
         dataset = sys.argv[1]
         input_file = sys.argv[2]
 
@@ -330,13 +254,7 @@ if __name__ == "__main__":
         project_root = script_dir.parent
         output_dir = project_root / "data" / "parsed"
 
-        # Optional: preprocess
-        # preprocessed = preprocess_logs(input_file, dataset_name=dataset)
-        # input_file = preprocessed
-
-        # Parse logs
         json_output = parse_logs_drain(dataset, input_file, output_dir)
         print(f"\nSuccess! Structured logs saved to: {json_output}")
     else:
-        # Run main demo/copy
         main()

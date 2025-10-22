@@ -1,15 +1,3 @@
-"""
-Resampling and Evaluation Script for All Models.
-
-Generates performance distributions across multiple resamples for:
-- Random Forest (supervised classical)
-- LSTM (supervised deep learning)
-- Isolation Forest (unsupervised classical)
-- Autoencoder (unsupervised deep learning)
-
-Outputs are later consumed by the statistical ranking step.
-"""
-
 from __future__ import annotations
 
 import json
@@ -28,10 +16,9 @@ from sklearn.metrics import (
 from sklearn.model_selection import train_test_split
 from tqdm import tqdm
 
-# Ensure the extension package is importable
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from config import (  # noqa: E402
+from config import (
     AUTOENCODER_CONFIG,
     DATASET,
     DATA_MODE,
@@ -43,9 +30,9 @@ from config import (  # noqa: E402
     SCOTT_KNOTT_CONFIG,
     WORD2VEC_PATH,
 )
-from models.autoencoder import AutoencoderDetector  # noqa: E402
-from models.isolation_forest import IsolationForestDetector  # noqa: E402
-from models.lstm import LSTMSequenceClassifier, LSTMTrainingConfig  # noqa: E402
+from models.autoencoder import AutoencoderDetector
+from models.isolation_forest import IsolationForestDetector
+from models.lstm import LSTMSequenceClassifier, LSTMTrainingConfig
 
 
 def build_metrics(y_true, y_pred, y_scores):
@@ -88,11 +75,8 @@ def evaluate_random_forest(model, X_test, y_test):
 
 
 def main():
-    print("=" * 70)
-    print("PART 2: RESAMPLING AND EVALUATION")
-    print("=" * 70)
-
-    print("\nLoading MCV and Word2Vec data...")
+    print("Resampling evaluation for Random Forest, LSTM, Isolation Forest, and Autoencoder")
+    print("Loading MCV and Word2Vec data")
     try:
         mcv_data = np.load(MCV_PATH, allow_pickle=True)
     except FileNotFoundError as exc:
@@ -114,7 +98,7 @@ def main():
             "Re-run Part 1 preprocessing to regenerate aligned datasets."
         )
 
-    print(f"Loaded {DATASET} ({DATA_MODE}) training data: {X_mcv.shape[0]} sessions")
+    print(f"Training sessions: {X_mcv.shape[0]} (dataset {DATASET}, mode {DATA_MODE})")
 
     n_resamples = SCOTT_KNOTT_CONFIG["n_resamples"]
     test_size = SCOTT_KNOTT_CONFIG["test_size"]
@@ -123,7 +107,7 @@ def main():
     all_results = []
     lstm_cfg = LSTMTrainingConfig(**LSTM_CONFIG)
 
-    print(f"\nStarting evaluation on {n_resamples} resamples...")
+    print(f"Running {n_resamples} resamples (test size {test_size})")
 
     for i in tqdm(range(n_resamples), desc="Resampling Progress"):
         current_seed = base_seed + i
@@ -146,8 +130,6 @@ def main():
         test_sessions = session_ids[test_idx]
 
         run_results = {"run": i + 1}
-
-        # Random Forest
         rf = RandomForestClassifier(
             n_estimators=200, random_state=current_seed, n_jobs=-1
         )
@@ -160,8 +142,6 @@ def main():
         run_results["LSTM"] = lstm.evaluate(
             X_test_w2v, y_test, session_ids=test_sessions
         )
-
-        # Isolation Forest
         contamination = np.sum(y_train == 1) / len(y_train)
         iforest_config = ISOLATION_FOREST_CONFIG.copy()
         iforest_config["contamination"] = contamination
@@ -169,8 +149,6 @@ def main():
         iforest = IsolationForestDetector(**iforest_config)
         iforest.fit(X_train)
         run_results["Isolation Forest"] = iforest.evaluate(X_test, y_test)
-
-        # Autoencoder
         ae_config = AUTOENCODER_CONFIG.copy()
         ae_config["random_state"] = current_seed
         autoencoder = AutoencoderDetector(**ae_config)
@@ -186,7 +164,7 @@ def main():
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(all_results, f, indent=4)
 
-    print(f"\n✓ Resampling evaluation complete. Results saved to: {output_path}")
+    print(f"Resampling evaluation complete. Results saved to {output_path}")
 
     df_records = []
     for run in all_results:
@@ -204,14 +182,14 @@ def main():
             )
 
     summary = pd.DataFrame(df_records)
-    print("\nAverage performance across resamples:")
-    print(
+    print("Average performance (F1 / AUC):")
+    averages = (
         summary.groupby("model")[["f1_score", "auc"]]
         .mean()
         .sort_values(by="f1_score", ascending=False)
-        .to_string(float_format="%.4f")
     )
-    print("=" * 70)
+    for model_name, row in averages.iterrows():
+        print(f"  {model_name}: {row['f1_score']:.4f} / {row['auc']:.4f}")
 
 
 if __name__ == "__main__":

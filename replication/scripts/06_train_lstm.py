@@ -1,14 +1,3 @@
-"""
-LSTM Model Training Script
-
-Trains LSTM model for log-based anomaly detection using event-level embeddings.
-Based on material/models/LSTM.py implementation.
-
-Requirements:
-- PyTorch
-- Event-level embeddings (Word2Vec or FastText)
-"""
-
 import numpy as np
 import sys
 from pathlib import Path
@@ -28,17 +17,7 @@ except ImportError:
 
 
 class LogDataset(Dataset):
-    """Dataset class for log sequences with tracking of originating sessions"""
-
     def __init__(self, x_data, y_data, window_size=50, stride=50, session_ids=None):
-        """
-        Args:
-            x_data: Event sequences with embeddings (n_sessions, n_events, embedding_dim)
-            y_data: Labels (n_sessions,)
-            window_size: Sliding window size
-            stride: Stride for sliding window
-            session_ids: Optional iterable of session identifiers aligned with x_data
-        """
         self.x_data = x_data
         self.y_data = y_data
         self.window_size = window_size
@@ -105,16 +84,7 @@ class LogDataset(Dataset):
 
 
 class LSTMModel(nn.Module):
-    """LSTM model for log anomaly detection"""
-
     def __init__(self, input_dim, hidden_dim=8, num_layers=1, num_classes=2):
-        """
-        Args:
-            input_dim: Embedding dimension
-            hidden_dim: LSTM hidden dimension (default: 8)
-            num_layers: Number of LSTM layers (default: 1)
-            num_classes: Number of output classes (default: 2)
-        """
         super(LSTMModel, self).__init__()
 
         self.hidden_dim = hidden_dim
@@ -132,15 +102,6 @@ class LSTMModel(nn.Module):
         self.fc = nn.Linear(hidden_dim, num_classes)
 
     def forward(self, x):
-        """
-        Forward pass
-
-        Args:
-            x: Input tensor (batch_size, seq_len, input_dim)
-
-        Returns:
-            Output logits (batch_size, num_classes)
-        """
         # LSTM forward
         # out shape: (batch_size, seq_len, hidden_dim)
         out, (h_n, c_n) = self.lstm(x)
@@ -156,16 +117,6 @@ class LSTMModel(nn.Module):
 
 
 def train_lstm(train_loader, model, criterion, optimizer, device):
-    """
-    Train for one epoch
-
-    Args:
-        train_loader: DataLoader for training data
-        model: Model to train
-        criterion: Loss function
-        optimizer: Optimizer
-        device: Device (CPU/GPU)
-    """
     model.train()
     total_loss = 0
     correct = 0
@@ -197,15 +148,6 @@ def train_lstm(train_loader, model, criterion, optimizer, device):
 
 
 def evaluate_lstm(test_loader, model, criterion, device):
-    """
-    Evaluate model
-
-    Args:
-        test_loader: DataLoader for test data
-        model: Model to evaluate
-        criterion: Loss function
-        device: Device (CPU/GPU)
-    """
     model.eval()
     total_loss = 0
     correct = 0
@@ -257,7 +199,6 @@ def evaluate_lstm(test_loader, model, criterion, device):
 
 
 def compute_metrics(y_true, y_pred, y_proba):
-    """Compute evaluation metrics"""
     from sklearn.metrics import (precision_recall_fscore_support,
                                 roc_auc_score, confusion_matrix)
 
@@ -288,7 +229,6 @@ def compute_metrics(y_true, y_pred, y_proba):
 
 
 def aggregate_session_predictions(session_keys, window_probs, dataset, threshold=0.5):
-    """Aggregate window-level predictions back to session level"""
     session_prob_sum = {}
     session_counts = {}
 
@@ -325,8 +265,6 @@ def aggregate_session_predictions(session_keys, window_probs, dataset, threshold
 
 
 def main():
-    """Main function for LSTM training"""
-
     if not TORCH_AVAILABLE:
         print("Error: PyTorch is required for LSTM training.")
         print("Install with: pip install torch")

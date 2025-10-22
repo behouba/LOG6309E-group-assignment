@@ -1,14 +1,3 @@
-"""
-Log Representation Generation Script
-
-Generates different log representations for anomaly detection models:
-1. MCV (Message Count Vector) - for traditional ML models
-2. Word2Vec embeddings - for deep learning models
-3. FastText embeddings - for deep learning models
-
-Based on material/logrep/ generators
-"""
-
 import numpy as np
 import pandas as pd
 import sys
@@ -23,16 +12,6 @@ from config import get_experiment_name, WORD2VEC
 
 
 def extract_event_sequences(x_data):
-    """
-    Extract event ID sequences from structured log data
-
-    Args:
-        x_data: Dictionary mapping session_id -> list of event objects
-                OR 0-d numpy array containing such a dictionary
-
-    Returns:
-        List of event ID sequences
-    """
     # Handle 0-d array (from material sample data)
     if isinstance(x_data, np.ndarray) and x_data.shape == ():
         x_data = x_data.item()
@@ -66,20 +45,6 @@ def extract_event_sequences(x_data):
 
 
 def generate_mcv(x_train, y_train, x_test, y_test, output_file=None):
-    """
-    Generate Message Count Vector (MCV) representation
-
-    MCV counts the occurrence of each event type in a log sequence.
-    This creates a fixed-length feature vector for each session.
-
-    Args:
-        x_train, y_train: Training data and labels
-        x_test, y_test: Test data and labels
-        output_file: Path to save output (optional)
-
-    Returns:
-        Dictionary with transformed data
-    """
     print("\n" + "="*60)
     print("Generating Message Count Vector (MCV) Representation")
     print("="*60)
@@ -130,16 +95,6 @@ def generate_mcv(x_train, y_train, x_test, y_test, output_file=None):
 
 
 def transform_train_mcv(x_seq):
-    """
-    Transform event sequences to count vectors (training)
-
-    Args:
-        x_seq: Array of event sequences
-
-    Returns:
-        X: Count vector matrix
-        events: Event types (column names)
-    """
     X_counts = []
 
     for i in range(len(x_seq)):
@@ -157,16 +112,6 @@ def transform_train_mcv(x_seq):
 
 
 def transform_test_mcv(x_seq, event_types):
-    """
-    Transform event sequences to count vectors (test)
-
-    Args:
-        x_seq: Array of event sequences
-        event_types: Event types from training data
-
-    Returns:
-        X: Count vector matrix
-    """
     X_counts = []
 
     for i in range(len(x_seq)):
@@ -192,14 +137,12 @@ TOKEN_PATTERN = re.compile(r'\w+')
 
 
 def tokenize_template(template):
-    """Tokenize a log template into alpha-numeric tokens"""
     if not template:
         return []
     return TOKEN_PATTERN.findall(template)
 
 
 def lookup_token_vector(token, word_vectors):
-    """Return embedding vector for token, trying different casings"""
     if token in word_vectors:
         return word_vectors[token]
     lower = token.lower()
@@ -212,7 +155,6 @@ def lookup_token_vector(token, word_vectors):
 
 
 def build_template_corpus(template_sequences):
-    """Flatten template sequences into a corpus of token lists"""
     corpus = []
     for session in template_sequences:
         for template in session:
@@ -223,7 +165,6 @@ def build_template_corpus(template_sequences):
 
 
 def embed_template_sequences(template_sequences, word_vectors, embedding_dim):
-    """Convert template sequences to embedding sequences using cached vectors"""
     embeddings = []
     template_cache = {}
 
@@ -260,7 +201,6 @@ def embed_template_sequences(template_sequences, word_vectors, embedding_dim):
 
 
 def load_pretrained_word2vec():
-    """Load pretrained Word2Vec vectors according to config"""
     try:
         from gensim.models import KeyedVectors
         from gensim import downloader as api
@@ -291,7 +231,6 @@ def load_pretrained_word2vec():
 
 
 def train_word2vec_locally(token_corpus):
-    """Train a Word2Vec model on the provided token corpus"""
     try:
         from gensim.models import Word2Vec
     except ImportError as exc:
@@ -312,9 +251,9 @@ def train_word2vec_locally(token_corpus):
 
 def generate_word2vec(x_train, y_train, x_test, y_test, output_file=None,
                       train_session_ids=None, test_session_ids=None):
-    """
-    Generate Word2Vec embeddings for log events using either pretrained or locally-trained vectors.
-    """
+
+
+
     print("\n" + "="*60)
     print("Generating Word2Vec Embeddings")
     print("="*60)
@@ -334,7 +273,7 @@ def generate_word2vec(x_train, y_train, x_test, y_test, output_file=None,
             embedding_dim = word_vectors.vector_size
             print(f"Using pretrained embeddings (dimension={embedding_dim})")
         except Exception as exc:  # pylint: disable=broad-except
-            print(f"⚠️  Pretrained Word2Vec loading failed: {exc}")
+            print(f"Warning: Pretrained Word2Vec loading failed: {exc}")
             print("Falling back to training Word2Vec on log templates.")
             mode = "train"
 
@@ -385,7 +324,6 @@ def generate_word2vec(x_train, y_train, x_test, y_test, output_file=None,
 
 
 def extract_templates(x_data):
-    """Extract event templates from structured data"""
     templates = []
 
     for event_list in x_data:
@@ -406,8 +344,6 @@ def extract_templates(x_data):
 
 
 def main():
-    """Main function for representation generation"""
-
     script_dir = Path(__file__).parent
     project_root = script_dir.parent
 

@@ -1,14 +1,3 @@
-"""
-Automated Comparison with Original Paper Results
-
-Compares replication results with Wu et al. (2023) paper Tables 2 & 3.
-Generates side-by-side comparison tables and visualizations.
-
-Reference:
-Wu, X., Li, H., & Khomh, F. (2023). On the effectiveness of log representation
-for log-based anomaly detection. Empirical Software Engineering, 28, 137.
-"""
-
 import json
 import pandas as pd
 import numpy as np
@@ -59,15 +48,6 @@ PAPER_RESULTS = {
 
 
 def load_replication_results(results_dir: Path) -> dict:
-    """
-    Load replication results from JSON files
-
-    Args:
-        results_dir: Path to results directory
-
-    Returns:
-        Dictionary with replication results
-    """
     results = {}
 
     for dataset in PAPER_RESULTS.keys():
@@ -140,16 +120,6 @@ def load_replication_results(results_dir: Path) -> dict:
 
 
 def calculate_differences(paper_val, replication_val):
-    """
-    Calculate absolute and percentage difference
-
-    Args:
-        paper_val: Value from paper
-        replication_val: Value from replication
-
-    Returns:
-        Tuple of (absolute_diff, percentage_diff)
-    """
     if paper_val is None or replication_val is None:
         return None, None
 
@@ -161,17 +131,17 @@ def calculate_differences(paper_val, replication_val):
 
 def create_comparison_table(paper_results: dict, replication_results: dict,
                            dataset: str) -> pd.DataFrame:
-    """
-    Create comparison table for a dataset
 
-    Args:
-        paper_results: Results from paper
-        replication_results: Results from replication
-        dataset: Dataset name
 
-    Returns:
-        Comparison DataFrame
-    """
+
+
+
+
+
+
+
+
+
     rows = []
 
     paper_data = paper_results.get(dataset, {})
@@ -215,15 +185,15 @@ def create_comparison_table(paper_results: dict, replication_results: dict,
 
 def plot_comparison(paper_results: dict, replication_results: dict,
                    dataset: str, output_file: Path):
-    """
-    Create visual comparison plot
 
-    Args:
-        paper_results: Results from paper
-        replication_results: Results from replication
-        dataset: Dataset name
-        output_file: Path to save plot
-    """
+
+
+
+
+
+
+
+
     fig, axes = plt.subplots(1, 3, figsize=(18, 6))
     fig.suptitle(f'{dataset} Dataset: Replication vs. Paper Results', fontsize=16, fontweight='bold')
 
@@ -284,14 +254,14 @@ def plot_comparison(paper_results: dict, replication_results: dict,
 
 def create_summary_report(paper_results: dict, replication_results: dict,
                          output_file: Path):
-    """
-    Create summary report comparing all results
 
-    Args:
-        paper_results: Results from paper
-        replication_results: Results from replication
-        output_file: Path to save report
-    """
+
+
+
+
+
+
+
     with open(output_file, 'w') as f:
         f.write("="*80 + "\n")
         f.write("REPLICATION VALIDATION REPORT\n")
@@ -340,10 +310,10 @@ def create_summary_report(paper_results: dict, replication_results: dict,
                         # Check if difference is significant (> 5%)
                         if abs(pct_diff) > 5:
                             all_close = False
-                            f.write(f"  ⚠️  WARNING: Large difference detected (>{abs(pct_diff):.1f}%)\n")
+                            f.write(f"  WARNING: Large difference detected (>{abs(pct_diff):.1f}%)\n")
 
                 if all_close:
-                    f.write("\n  ✓ Results closely match paper values\n")
+                    f.write("\n  Results closely match paper values\n")
 
         f.write(f"\n{'='*80}\n")
         f.write("SUMMARY\n")
@@ -363,7 +333,6 @@ def create_summary_report(paper_results: dict, replication_results: dict,
 
 
 def main():
-    """Main function"""
     print("\n" + "="*80)
     print("Automated Comparison with Paper Results")
     print("Wu et al. (2023) - Tables 2 & 3")
@@ -410,7 +379,7 @@ def main():
                 output_plot = results_dir / f"comparison_{dataset}.png"
                 plot_comparison(PAPER_RESULTS, replication_results, dataset, output_plot)
         else:
-            print(f"  ⚠️  No replication results found for {dataset}")
+            print(f"  WARNING: No replication results found for {dataset}")
 
     # Create summary report
     print("\nGenerating summary report...")
@@ -495,7 +464,7 @@ def main():
     print(f"  Saved combined plot: {output_combined}")
 
     print("\n" + "="*80)
-    print("✓ Comparison completed successfully!")
+    print("Comparison completed successfully.")
     print("="*80)
     print("\nGenerated files:")
     print(f"  - Comparison tables: {results_dir}/comparison_*.csv")

@@ -1,40 +1,10 @@
-"""
-Enhanced Log Preprocessing Module (Qin et al. Approach)
-
-Implements advanced preprocessing techniques inspired by:
-Qin et al. (2025) "Preprocessing is All You Need: Boosting the Performance of
-Log Parsers With a General Preprocessing Framework" SANER 2025.
-
-Key preprocessing steps:
-1. Variable identification and masking with domain-knowledge regex
-2. Normalization of common patterns (IPs, timestamps, paths, etc.)
-3. Removal of noise and duplicates
-4. Token-level cleaning
-
-This preprocessing significantly improves parsing accuracy by identifying
-and masking variables before the parsing stage.
-"""
-
 import re
 from typing import List, Tuple, Dict
 from pathlib import Path
 
 
 class QinPreprocessor:
-    """
-    Advanced log preprocessor following Qin et al. approach
-
-    Masks variables in log messages using comprehensive regex patterns
-    to improve downstream parsing accuracy.
-    """
-
     def __init__(self, dataset_name: str = "generic"):
-        """
-        Initialize preprocessor with dataset-specific patterns
-
-        Args:
-            dataset_name: Dataset name for custom patterns (HDFS, BGL, etc.)
-        """
         self.dataset_name = dataset_name
         self.stats = {
             'total_lines': 0,
@@ -50,12 +20,6 @@ class QinPreprocessor:
         self.dataset_patterns = self._get_dataset_patterns(dataset_name)
 
     def _get_general_patterns(self) -> List[Tuple[str, str, str]]:
-        """
-        Get general regex patterns for common log variables
-
-        Returns:
-            List of (pattern_name, regex, placeholder) tuples
-        """
         patterns = [
             # IP addresses (IPv4 and IPv6)
             ('ipv4', r'\b(?:[0-9]{1,3}\.){3}[0-9]{1,3}\b(?::[0-9]+)?', '<IP>'),
@@ -102,15 +66,6 @@ class QinPreprocessor:
         return patterns
 
     def _get_dataset_patterns(self, dataset_name: str) -> List[Tuple[str, str, str]]:
-        """
-        Get dataset-specific regex patterns
-
-        Args:
-            dataset_name: Dataset name
-
-        Returns:
-            List of (pattern_name, regex, placeholder) tuples
-        """
         if dataset_name.upper() == "HDFS":
             return [
                 ('block_id', r'blk_-?\d+', '<BLOCK>'),
@@ -135,15 +90,6 @@ class QinPreprocessor:
             return []
 
     def preprocess_line(self, line: str) -> Tuple[str, int]:
-        """
-        Preprocess a single log line
-
-        Args:
-            line: Raw log line
-
-        Returns:
-            Tuple of (preprocessed_line, num_variables_masked)
-        """
         original_line = line
         variables_masked = 0
 
@@ -178,15 +124,6 @@ class QinPreprocessor:
         return line, variables_masked
 
     def _clean_line(self, line: str) -> str:
-        """
-        Additional cleaning operations
-
-        Args:
-            line: Log line
-
-        Returns:
-            Cleaned line
-        """
         # Remove extra whitespace
         line = re.sub(r'\s+', ' ', line)
 
@@ -197,17 +134,17 @@ class QinPreprocessor:
 
     def preprocess_file(self, input_file: Path, output_file: Path,
                         remove_duplicates: bool = True) -> Dict:
-        """
-        Preprocess entire log file
 
-        Args:
-            input_file: Path to input log file
-            output_file: Path to output preprocessed file
-            remove_duplicates: Whether to remove duplicate lines
 
-        Returns:
-            Dictionary with preprocessing statistics
-        """
+
+
+
+
+
+
+
+
+
         print(f"\n{'='*70}")
         print(f"Qin et al. Preprocessing Pipeline")
         print(f"{'='*70}")
@@ -275,18 +212,18 @@ class QinPreprocessor:
 def preprocess_with_qin_approach(input_file: str, output_file: str = None,
                                  dataset_name: str = "generic",
                                  remove_duplicates: bool = True) -> Dict:
-    """
-    Main function to preprocess logs using Qin et al. approach
 
-    Args:
-        input_file: Path to raw log file
-        output_file: Path to save preprocessed file (optional)
-        dataset_name: Dataset name for custom patterns
-        remove_duplicates: Whether to remove duplicate lines
 
-    Returns:
-        Dictionary with preprocessing statistics
-    """
+
+
+
+
+
+
+
+
+
+
     input_path = Path(input_file)
 
     if output_file is None:
@@ -318,5 +255,5 @@ if __name__ == "__main__":
 
     stats = preprocess_with_qin_approach(input_file, output_file, dataset_name)
 
-    print(f"\n✓ Preprocessing completed successfully!")
+    print("\nPreprocessing completed successfully.")
     print(f"  Output saved to: {output_file or Path(input_file).parent / f'{Path(input_file).stem}_preprocessed{Path(input_file).suffix}'}")

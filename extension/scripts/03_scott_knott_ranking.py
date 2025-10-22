@@ -1,11 +1,3 @@
-"""
-Statistical Ranking using Scott-Knott Test
-
-This script takes the resampling results and applies the Scott-Knott Effect
-Size Difference (SK-ESD) test to group the models into statistically
-distinct ranks based on their F1-score and AUC.
-"""
-
 import sys
 import json
 import numpy as np
@@ -15,7 +7,6 @@ import seaborn as sns
 from pathlib import Path
 from scipy import stats
 
-# Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from config import RESULTS_DIR
 
@@ -24,7 +15,6 @@ CLIFFS_DELTA_THRESHOLD = 0.147
 
 
 def cliffs_delta(a, b):
-    """Compute Cliff's delta effect size."""
     a = np.asarray(a)
     b = np.asarray(b)
     m = len(a)
@@ -40,8 +30,6 @@ def cliffs_delta(a, b):
 
 
 def scott_knott(groups):
-    """Custom Scott-Knott Effect Size Difference implementation."""
-
     def split(model_list):
         if len(model_list) <= 1:
             return [model_list]
@@ -91,8 +79,6 @@ def scott_knott(groups):
         groups.keys(), key=lambda m: np.mean(groups[m]), reverse=True
     )
     raw_groups = split(ordered_models)
-
-    # Sort groups by mean for rank assignment
     ranked_groups = sorted(
         raw_groups,
         key=lambda models: np.mean(np.concatenate([groups[m] for m in models])),
@@ -107,8 +93,7 @@ def scott_knott(groups):
 
 
 def perform_scott_knott(data, metric):
-    """Wrapper to compute Scott-Knott ranks for a given metric."""
-    print(f"\n--- Performing Scott-Knott Ranking for {metric.upper()} ---")
+    print(f"Scott-Knott ranking for {metric.upper()}")
     metric_groups = {
         model: group[metric].values
         for model, group in data.groupby("model")
@@ -117,11 +102,10 @@ def perform_scott_knott(data, metric):
     ranks = scott_knott(metric_groups)
     for model, rank in sorted(ranks.items(), key=lambda x: x[1]):
         mean_score = np.mean(metric_groups[model])
-        print(f"  Rank {rank}: {model} (mean={mean_score:.4f})")
+        print(f"  Rank {rank}: {model} mean={mean_score:.4f}")
     return ranks
 
 def plot_distributions(data, metric, output_file):
-    """Plot the performance distribution of models"""
     plt.figure(figsize=(12, 7))
     sns.boxplot(data=data, x='model', y=metric)
     sns.stripplot(data=data, x='model', y=metric, color=".25", jitter=True, dodge=True)
@@ -134,27 +118,21 @@ def plot_distributions(data, metric, output_file):
     plt.tight_layout()
     
     plt.savefig(output_file, dpi=300)
-    print(f"\n✓ Performance distribution plot saved to: {output_file}")
+    print(f"Saved {metric.upper()} distribution plot to {output_file}")
     plt.close()
 
 def main():
-    print("="*70)
-    print("PART 2: STATISTICAL RANKING WITH SCOTT-KNOTT")
-    print("="*70)
-    
-    # --- 1. Load Data ---
+    print("Scott-Knott ranking on resampling results")
     results_dir = Path(RESULTS_DIR)
     input_path = results_dir / "resampling_results.json"
     
     if not input_path.exists():
-        print(f"Error: Resampling results not found at {input_path}")
-        print("Please run scripts/02_resample_evaluate.py first.")
+        print(f"Error: resampling results not found at {input_path}")
+        print("Run scripts/02_resample_evaluate.py first.")
         return
-        
+
     with open(input_path, 'r') as f:
         resampling_data = json.load(f)
-        
-    # --- 2. Prepare DataFrame ---
     records = []
     for run_data in resampling_data:
         run_id = run_data['run']
@@ -166,15 +144,12 @@ def main():
                 "f1_score": metrics['f1_score'],
                 "auc": metrics['auc']
             })
-            
+
     df = pd.DataFrame(records)
-    print("Loaded performance data for all models over 10 runs.")
-    
-    # --- 3. Perform Scott-Knott for F1-Score and AUC ---
+    print(f"Loaded {len(df)} metric records.")
+
     f1_ranks = perform_scott_knott(df, 'f1_score')
     auc_ranks = perform_scott_knott(df, 'auc')
-    
-    # --- 4. Save Ranks ---
     ranking_summary = (
         pd.DataFrame(
             {
@@ -190,15 +165,13 @@ def main():
     output_csv = results_dir / "scott_knott_ranking.csv"
     ranking_summary.to_csv(output_csv, index=False)
     
-    print(f"\n--- Final Ranking Summary ---")
+    print("Final ranking summary:")
     print(ranking_summary.to_string(index=False))
-    print(f"\n✓ Ranking summary saved to: {output_csv}")
-    
-    # --- 5. Create Visualizations ---
+    print(f"Ranking summary saved to {output_csv}")
     plot_distributions(df, 'f1_score', results_dir / "f1_score_distribution.png")
     plot_distributions(df, 'auc', results_dir / "auc_distribution.png")
     
-    print("=" * 70)
+    print("Distribution plots generated.")
 
 if __name__ == "__main__":
     main()
