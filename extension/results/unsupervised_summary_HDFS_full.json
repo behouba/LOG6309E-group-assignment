@@ -1,0 +1,23 @@
+{
+    "dataset": "HDFS",
+    "data_mode": "full",
+    "representation": "MCV",
+    "models": {
+        "isolation_forest": {
+            "category": "classical_unsupervised",
+            "precision": 0.7630761263593993,
+            "recall": 0.5834488220154425,
+            "f1_score": 0.6612812745428026,
+            "auc": 0.9620213924734374,
+            "accuracy": 0.9825004782081973
+        },
+        "autoencoder": {
+            "category": "deep_learning_unsupervised",
+            "precision": 0.43652501344809036,
+            "recall": 0.6426450207879628,
+            "f1_score": 0.5199006967245936,
+            "auc": 0.9772498265086661,
+            "accuracy": 0.9652502043253207
+        }
+    }
+}

@@ -1,0 +1,26 @@
+# Extension (Part 2) Dependencies
+# These are in addition to Part 1 requirements
+
+# Core dependencies (should already be installed from Part 1)
+numpy>=1.20.0
+scikit-learn>=0.24.0
+torch>=1.10.0
+
+# New dependencies for Part 2
+
+# Explainability
+shap>=0.41.0              # SHAP values for model explanation
+lime>=0.2.0               # LIME for instance explanations
+
+# Statistical testing
+scikit-posthocs>=0.7.0    # Scott-Knott and other statistical tests
+scipy>=1.7.0              # Statistical functions
+
+# Visualization
+matplotlib>=3.3.0
+seaborn>=0.11.0
+plotly>=5.0.0             # Interactive plots for explanations
+
+# Utilities
+pandas>=1.3.0
+tqdm>=4.62.0

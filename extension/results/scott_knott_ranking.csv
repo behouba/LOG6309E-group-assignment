@@ -1,0 +1,5 @@
+Model,F1_Rank,AUC_Rank
+Random Forest,1,1
+LSTM,2,2
+Autoencoder,3,3
+Isolation Forest,3,4
