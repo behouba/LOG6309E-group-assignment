@@ -33,9 +33,10 @@ The script executes the following steps in order:
    - Word2Vec embeddings (for LSTM; falls back to in-domain training if no pretrained model is available)
 5. feature filtering with correlation clustering and variance inflation factor (VIF)
 6. model training and evaluation
-   - Random Forest (classical baseline)
+   - Random Forest, Logistic Regression, Decision Tree (classical models)
    - LSTM sequence model
-7. comparison against the reference results
+7. performance metrics summary table generation
+8. comparison against the reference results
 
 Each script writes logs to `logs/` and intermediate artefacts to `data/processed/`.
 
@@ -51,6 +52,12 @@ Both datasets come from LogHub. Download helpers are included in `scripts/00_dow
 ---
 
 ## Results
+
+### Performance Summary
+
+A comprehensive performance metrics table is automatically generated in `results/performance_metrics_table.png` showing Precision, Recall, F1-Score, and AUC for all models across both datasets.
+
+**Key findings:**
 
 | Dataset | Model | Precision | Recall | F1 | AUC | Notes |
 |---------|-------|----------:|-------:|---:|----:|-------|
@@ -73,6 +80,17 @@ The gap on BGL LSTM matches the discussion in Section&nbsp;6 of Wu et&nbsp;al.; 
 ## Feature Reduction
 
 Correlation analysis clusters features with Spearman |ρ| ≥ 0.95 and keeps one representative per cluster. VIF (threshold 5.0) removes remaining redundancy. Resulting feature sets and before/after metrics are saved under `results/feature_selection/`.
+
+### Visualizations
+
+The pipeline generates the following key visualizations in `results/`:
+
+- **`performance_metrics_table.png`**: Comprehensive summary of all models' performance metrics
+- **`comparison_HDFS.png`**: HDFS model comparison with/without feature selection
+- **`comparison_BGL.png`**: BGL model comparison with/without feature selection
+- **`roc_HDFS_full_rf_with_fs.png`**: ROC curve for HDFS Random Forest
+- **`roc_BGL_full_rf_with_fs.png`**: ROC curve for BGL Random Forest
+- **`correlation_matrix_HDFS.png`**: Correlation analysis visualization
 
 ---
 

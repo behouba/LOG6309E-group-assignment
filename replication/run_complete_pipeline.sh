@@ -18,17 +18,19 @@
 #
 # ============================================================================
 
-set -e  # Exit on error
+set -euo pipefail  # Fail fast, even in pipelines
 trap 'echo "Error on line $LINENO. Exiting."; exit 1' ERR
+
+ARG="${1:-}"
 
 # Default: run both datasets
 RUN_HDFS=true
 RUN_BGL=true
 
 # Parse arguments
-if [ "$1" = "--hdfs-only" ]; then
+if [ "$ARG" = "--hdfs-only" ]; then
     RUN_BGL=false
-elif [ "$1" = "--bgl-only" ]; then
+elif [ "$ARG" = "--bgl-only" ]; then
     RUN_HDFS=false
 fi
 
@@ -56,6 +58,7 @@ echo "Virtual environment activated (Python $(python --version))"
 
 # Create logs directory if it doesn't exist
 mkdir -p logs
+mkdir -p results
 
 # Track start time
 START_TIME=$(date +%s)
@@ -119,6 +122,11 @@ run_dataset_pipeline() {
     python scripts/06_train_lstm.py 2>&1 | tee logs/06_lstm_${DATASET}.log
     echo "LSTM trained"
 
+    # Step 7: Generate performance summary table
+    echo "Step 7: generate performance metrics summary table"
+    python scripts/create_summary_table.py 2>&1 | tee logs/07_summary_table_${DATASET}.log
+    echo "Performance summary table generated"
+
     local END=$(date +%s)
     local DURATION=$((END - START))
     local MINUTES=$((DURATION / 60))
@@ -137,11 +145,11 @@ if [ "$RUN_BGL" = true ]; then
     run_dataset_pipeline "BGL"
 fi
 
-# Step 7: Compare results
+# Step 8: Compare results
 if [ "$RUN_HDFS" = true ] && [ "$RUN_BGL" = true ]; then
-    echo "Step 7: compare results with paper"
+    echo "Step 8: compare results with paper"
     if [ -f "scripts/07_compare_with_paper.py" ]; then
-        python scripts/07_compare_with_paper.py 2>&1 | tee logs/07_compare_results.log
+        python scripts/07_compare_with_paper.py 2>&1 | tee logs/08_compare_results.log
         echo "Comparison complete"
     else
         echo "Comparison script not found; skipping."
