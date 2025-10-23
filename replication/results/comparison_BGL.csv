@@ -1,9 +1,9 @@
 Model,Metric,Paper,Replication,Abs Diff,% Diff
-Random_Forest_MCV,Precision,0.9590,0.9375,-0.0215,-2.24%
-Random_Forest_MCV,Recall,0.9210,0.9036,-0.0174,-1.89%
-Random_Forest_MCV,F1 Score,0.9390,0.9202,-0.0188,-2.00%
+Random_Forest_MCV,Precision,0.8300,0.9375,+0.1075,+12.95%
+Random_Forest_MCV,Recall,0.9630,0.9036,-0.0594,-6.17%
+Random_Forest_MCV,F1 Score,0.8910,0.9202,+0.0292,+3.28%
 Random_Forest_MCV,Auc,N/A,0.9770,N/A,N/A
-LSTM_Word2Vec,Precision,0.8710,0.6134,-0.2576,-29.57%
-LSTM_Word2Vec,Recall,0.9140,0.8795,-0.0345,-3.77%
-LSTM_Word2Vec,F1 Score,0.8650,0.7228,-0.1422,-16.44%
-LSTM_Word2Vec,Auc,N/A,0.7983,N/A,N/A
+LSTM_Word2Vec,Precision,0.7550,0.6032,-0.1518,-20.11%
+LSTM_Word2Vec,Recall,0.9880,0.9157,-0.0723,-7.32%
+LSTM_Word2Vec,F1 Score,0.8560,0.7273,-0.1287,-15.04%
+LSTM_Word2Vec,Auc,N/A,0.8061,N/A,N/A

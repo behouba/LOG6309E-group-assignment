@@ -13,21 +13,22 @@ Random_Forest_MCV
 --------------------------------------------------------------------------------
 Metric          Paper        Replication  Abs Diff     % Diff      
 --------------------------------------------------------------------------------
-Precision       0.9590       0.9375            -0.0215       -2.24%
-Recall          0.9210       0.9036            -0.0174       -1.89%
-F1 Score        0.9390       0.9202            -0.0188       -2.00%
-
-  Results closely match paper values
+Precision       0.8300       0.9375            +0.1075      +12.95%
+  WARNING: Large difference detected (>13.0%)
+Recall          0.9630       0.9036            -0.0594       -6.17%
+  WARNING: Large difference detected (>6.2%)
+F1 Score        0.8910       0.9202            +0.0292       +3.28%
 
 LSTM_Word2Vec
 --------------------------------------------------------------------------------
 Metric          Paper        Replication  Abs Diff     % Diff      
 --------------------------------------------------------------------------------
-Precision       0.8710       0.6134            -0.2576      -29.57%
-  WARNING: Large difference detected (>29.6%)
-Recall          0.9140       0.8795            -0.0345       -3.77%
-F1 Score        0.8650       0.7228            -0.1422      -16.44%
-  WARNING: Large difference detected (>16.4%)
+Precision       0.7550       0.6032            -0.1518      -20.11%
+  WARNING: Large difference detected (>20.1%)
+Recall          0.9880       0.9157            -0.0723       -7.32%
+  WARNING: Large difference detected (>7.3%)
+F1 Score        0.8560       0.7273            -0.1287      -15.04%
+  WARNING: Large difference detected (>15.0%)
 
 ================================================================================
 HDFS DATASET
@@ -38,7 +39,7 @@ Random_Forest_MCV
 --------------------------------------------------------------------------------
 Metric          Paper        Replication  Abs Diff     % Diff      
 --------------------------------------------------------------------------------
-Precision       1.0000       0.9990            -0.0010       -0.10%
+Precision       0.9980       0.9990            +0.0010       +0.10%
 Recall          1.0000       0.9992            -0.0008       -0.08%
 F1 Score        0.9990       0.9991            +0.0001       +0.01%
 
@@ -48,10 +49,11 @@ LSTM_Word2Vec
 --------------------------------------------------------------------------------
 Metric          Paper        Replication  Abs Diff     % Diff      
 --------------------------------------------------------------------------------
-Precision       0.9970       0.9960            -0.0010       -0.10%
-Recall          0.9210       0.9939            +0.0729       +7.91%
-  WARNING: Large difference detected (>7.9%)
-F1 Score        0.9580       0.9949            +0.0369       +3.86%
+Precision       0.9970       0.9817            -0.0153       -1.53%
+Recall          0.9210       0.9258            +0.0048       +0.52%
+F1 Score        0.9580       0.9529            -0.0051       -0.53%
+
+  Results closely match paper values
 
 ================================================================================
 SUMMARY

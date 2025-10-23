@@ -1,6 +1,6 @@
 # Dataset selection
 # Options: "HDFS", "BGL", "Spirit", "Thunderbird"
-DATASET = "HDFS"
+DATASET = "BGL"
 
 # Data mode
 # Options: "sample" (100k lines for quick testing), "full" (complete dataset)

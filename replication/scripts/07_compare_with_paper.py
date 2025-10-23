@@ -15,7 +15,7 @@ PAPER_RESULTS = {
     "HDFS": {
         # Table 2 - HDFS results (Random Forest with MCV representation)
         "Random_Forest_MCV": {
-            "precision": 1.000,
+            "precision": 0.998,
             "recall": 1.000,
             "f1_score": 0.999,
             "auc": None  # Not always reported in paper
@@ -31,16 +31,16 @@ PAPER_RESULTS = {
     "BGL": {
         # Table 3 - BGL results (Random Forest with MCV representation)
         "Random_Forest_MCV": {
-            "precision": 0.959,
-            "recall": 0.921,
-            "f1_score": 0.939,
+            "precision": 0.830,
+            "recall": 0.963,
+            "f1_score": 0.891,
             "auc": None
         },
         # LSTM with Word2Vec (from Table 3)
         "LSTM_Word2Vec": {
-            "precision": 0.871,
-            "recall": 0.914,
-            "f1_score": 0.865,
+            "precision": 0.755,
+            "recall": 0.988,
+            "f1_score": 0.856,
             "auc": None
         }
     }
