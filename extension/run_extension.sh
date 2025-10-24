@@ -3,7 +3,7 @@
 # Part 2 extension pipeline runner.
 
 # Exit immediately if a command exits with a non-zero status.
-set -e
+set -euo pipefail
 
 # Configuration
 PYTHON_CMD="./venv/bin/python"
@@ -48,6 +48,13 @@ echo "Step 3: run Scott-Knott ranking"
 $PYTHON_CMD "$SCRIPT_DIR/03_scott_knott_ranking.py" | tee "$LOG_DIR/03_scott_knott.log"
 
 echo "Step 3 complete"
+
+# Step 3b: Generate ranking visualizations
+echo "Step 3b: generate ranking visualizations"
+
+$PYTHON_CMD "$SCRIPT_DIR/create_ranking_visualization.py" | tee "$LOG_DIR/03b_ranking_viz.log"
+
+echo "Step 3b complete"
 
 # Step 4: Model Explanation with SHAP
 echo "Step 4: generate SHAP explanation"

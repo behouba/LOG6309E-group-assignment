@@ -9,10 +9,11 @@ This folder extends the replication by evaluating two unsupervised approaches on
 - `scripts/01_train_unsupervised.py`: trains the Isolation Forest and Autoencoder using the Message Count Vector features.
 - `scripts/02_resample_evaluate.py`: repeated train/test splits (10×) for all four models.
 - `scripts/03_scott_knott_ranking.py`: Scott-Knott ESD on the resampled scores.
+- `scripts/create_ranking_visualization.py`: generates ranking visualizations (bar charts and summary table).
 - `scripts/04_model_explanation.py`: SHAP analysis for the top-ranked model.
 - `config.py`: configuration values used across scripts.
 - `run_extension.sh`: runs the whole sequence.
-- `results/`: JSON metrics, ranking CSV, SHAP plots.
+- `results/`: JSON metrics, ranking CSV, SHAP plots, and ranking visualizations.
 - `logs/`: execution traces.
 
 ---
@@ -32,7 +33,8 @@ The script executes:
 1. Train Isolation Forest and Autoencoder.
 2. Resample train/test splits ten times and score Random Forest, LSTM, Isolation Forest, Autoencoder.
 3. Apply Scott-Knott ESD to the F1 and AUC distributions.
-4. Run SHAP on the highest ranked model (Random Forest).
+4. Generate ranking visualizations (bar charts and summary table).
+5. Run SHAP on the highest ranked model (Random Forest).
 
 Intermediate artefacts are written to `results/` and `logs/`.
 
@@ -50,6 +52,17 @@ Intermediate artefacts are written to `results/` and `logs/`.
 Scott-Knott groups the supervised models in the top tier, followed by Isolation Forest and then the Autoencoder.
 
 SHAP analysis of the Random Forest shows that a small number of log templates (e.g., Template_10, Template_6) dominate the predictions, which supports using template frequency monitoring for this dataset.
+
+### Visualizations
+
+The pipeline generates the following visualizations in `results/`:
+
+- **`scott_knott_ranking_table.png`**: Summary table showing statistical ranking for each model by F1-Score and AUC
+- **`scott_knott_ranking_visualization.png`**: Bar charts visualizing model rankings for both metrics
+- **`f1_score_distribution.png`**: Distribution of F1-scores across 10 resampling iterations
+- **`auc_distribution.png`**: Distribution of AUC values across 10 resampling iterations
+- **`shap_summary.png`**: SHAP feature importance summary for Random Forest
+- **`shap_waterfall_single.png`**: Detailed SHAP explanation for a single prediction
 
 ---
 
